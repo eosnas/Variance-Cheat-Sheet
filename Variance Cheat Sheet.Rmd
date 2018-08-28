@@ -1,0 +1,105 @@
+---
+title: "Variance Calculation Cheat Sheat"
+author: "Erik Osnas"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Variance of a product
+
+The variance of a product of two independent random variable is often approximated as  
+
+$$Var(xy) \approx y^2Var(x) + x^2 Var(y).$$  
+
+However, Goodman (1960, eq 7) gives an exact formula
+
+$$Var(xy) = y^2Var(x) + x^2 Var(y) - Var(x)Var(y).$$  
+
+# Variance of a ratio
+The variance of the ratio of two independent random variable can be found by substituting the variance of the reciprocal of a random variable into the equation above for the variance of a product.  The approximate variance of a reciprocal found from a Taylor series expansion (Delta Method) is 
+
+$$Var(1/x) \approx \frac{Var(x)}{x^4}.$$  
+
+This approximation tends to be good if x is not too close to zero relative to the variance of x (Fieberg and Giudice, 2008).  Substituting this approximation into the approximation for the product is 
+
+$$Var \left( \frac{x}{y} \right) = Var \left( x \frac{1}{y} \right) \approx \frac{Var(x)}{y^2} + x^2 \frac{Var(y)}{y^4}$$
+or into the exact formula is 
+
+$$Var \left( \frac{x}{y} \right) \approx x^2 \frac{Var(y)}{y^4} + \frac{Var(x)}{y^2} - Var(x)\frac{Var(y)}{y^4}.$$ 
+
+# Variance of a linear combination of random variables
+The variance of a linear combination of random variable is often useful, 
+
+$$\begin{aligned}\operatorname {Var} \left(\sum _{i=1}^{N}a_{i}X_{i}\right)&=\sum _{i,j=1}^{N}a_{i}a_{j}\operatorname {Cov} (X_{i},X_{j})\\&=\sum _{i=1}^{N}a_{i}^{2}\operatorname {Var} (X_{i})+\sum _{i\not =j}a_{i}a_{j}\operatorname {Cov} (X_{i},X_{j})\\&=\sum _{i=1}^{N}a_{i}^{2}\operatorname {Var} (X_{i})+2\sum _{1\leq i<j\leq N}a_{i}a_{j}\operatorname {Cov} (X_{i},X_{j}),\end{aligned}$$
+which in matrix form is  
+$$Var( \bf{a X}) = \bf{a \Sigma a^t},$$
+where $\bf{a}$ is a row vector of coefficients, $\bf{\Sigma}$ is the variance-covariance matrix of the vector of random variables $\bf{X}$, and $t$ is the transpose. This last form is useful when you want to construct variance estimates for specific covariate effects or levels of a factor in a linear model, where $\bf{\Sigma}$ is the sample covariance matrix of the parameter vector and $\bf{a}$ is the row of the design matrix that represents the specific estimate required.  
+
+# Variance of a ratio estimate from a stratified survey
+Williams et al. (2002, equation 12.9) give a formula for the variance of a ratio estimator for a stratified design, based originally on Cochran (1977), as  
+
+$$E[\hat Y] = \displaystyle\sum_{i}^{S} \frac{\bar y_i}{\bar a_i} A_i = \displaystyle\sum_{i}^{S} \hat D_i A_i$$
+and 
+$$A_i = \displaystyle\sum_{j}^{M_i} a_{ij}.$$ 
+with estimated variance  
+$$Var(\hat Y) = \displaystyle\sum_{i}^{S} M_i^2 \frac{(1-m_i / M_i)}{m_i} ( s^2_{iy} + \hat {D^2}_i s^2_{ia} - 2 \hat {D_i} s_{iay} ),$$
+where $m_i$ and $M_i$ are the number of sampled and total plots in strata $i$, respectively, and there are $S$ total strata; 
+$$s^2_{ix} = \displaystyle\sum_{j}^{m_i} (x_{ij} - \bar x )/(m_i -1), $$
+and 
+$$s^2_{ixy} = \displaystyle\sum_{j}^{m_i} (x_{ij} - \bar x )(y_{ij} - \bar y )/(m_i -1).$$ 
+Williams et al. (2002) discuss properties of this estimator and give an alternative. More detailed discussion is given in Cochran (1977) or Thompson (2012).  
+
+# Variance of detection-corrected estimates
+The approximation of a variance of a ratio is often applied to the variance of a population estimate ($N$) derived from an estimate of observed counts (a population "index", $Y$) combined with an estimate of detection probability ($p$). The population estimate is $N = Y/p$ with variance  
+
+$$Var(N) = Var \left( \frac{Y}{p} \right) \approx \frac{Var(Y)}{p^2} + Y^2 \frac{Var(p)}{p^4}.$$
+Often the above equation is presented as  
+$$\begin{aligned}  Var\left( \frac{Y}{p} \right) &\approx  \frac{Y^2}{p^2} \left[ \frac{Var(Y)}{Y^2} + \frac{Var(p)}{p^2} \right] \\\\&= N^2 \left[ \frac{Var(Y)}{Y^2} + \frac{Var(p)}{p^2} \right] \\\\&= \frac{1}{p^2} \left[ Var(Y) + N^2 Var(p) \right].\end{aligned}$$
+Assuming the number of observed animals has no variance due to incomplete sampling (all available sample plots have been observed) and that the number of observer animals has a binomial distribution, $Var(Y) = Np(1-p);$ the above equation becomes  
+
+$$Var(N) = N \left( \frac{1-p}{p} \right) + \frac{N^2}{p^2} Var(p) .$$
+Thus, the variance in the population size estimate has two components when correcting for imperfect detection, a component due to the binomial sampling process of imperfect detection and a component due to estimation of detection probability (Thompson 2012, eq 16.7).  When sampling is not complete, then variance due to sampling is also a component in the variance of population size. Let the total population be estimated as $N = M \bar y /p$, with $M$ the total number of sample plots available and $m$ the number of those plots sampled, then the variance becomes (Thompson 2012, eq. just after 16.9)
+
+$$Var(N) = \frac{M^2}{p^2} \left[ \left( \frac{M-m}{M} \right) \frac{s^2}{m} +\left( \frac{1-p}{M} \right) \bar y + \frac{\bar{y}^2}{p^2} Var(p) \right]$$
+with $\bar y = (1/m) \sum_i y_i$ the mean of the observed values and $s^2 = 1/(n-1) \sum_i (y_i - \bar y)^2$ the sample variance.  
+
+An expression for the variance in the mean of observed values is sometimes useful (e.g., Fieberg and Giudice 2008, eq. A3 and A4). An expression was derived by Thompson (2012, p. 223) following the logic above and takes the form  
+
+$$Var(\bar y) = Var[E(\bar y | \mathbf{y} )] + E[Var(\bar y | \mathbf{y} )].$$
+The first term is the variance due to sampling and the second is the variance due to binomial detection. Thompson gives an estimator as 
+$$Var(\bar y) = \left( \frac{M-m}{M} \right) \frac{s^2}{m} +\left( \frac{1-p}{M} \right) \bar y$$
+and this is used in Fieberg and Giudice (2008) eq. A4. In much of the unpublished agency work that I have observed, the variance component due to the binomial process has been ignored. 
+
+###Simulation
+I simulated the above process to explore the accuracy of approximations and to check my understanding. I used a study area with 1000 plots and varied the sampling intensity ($m$) from 100 to 1000 in increments of 100.  I varied detection from 0.1 to 1.0 in increments of 0.1.  The number of individual was sampled from a Poisson distribution with mean of 500, and then I replicated the following 10000 times:  (1) $m$ binomial samples were taken to determine the observed values $y_i$; (2) I calculated the mean of the observed values, $\bar y$, and $Var( \bar y)$ from the equation above. Over all replicates, I then found the standard deviation of $\bar y$ and the mean of $\sqrt {Var( \bar y )}$ and report the results in Figure 1.  
+
+![Figure 1. Results of simulating the variance in mean number of observed values across samples when detection is $\leq 1$. (A) SD as a function of sample size and each line is a different detection probability.  (B) based on same data as in A but with SD as a function of detection and each line is a different sample size. Thick gray lines are from equation and thin dashed lines are simulation results.](fig1.png)
+
+# Variance of stratified survey with probability of detection adjustment
+Fieberg and Giudice (2008) discussed the correct estimation of the variance of a population estimate from a stratified survey when strata share a common estimate of detection. The issue here is that when strata share an estimate of detection, there is some non-independence introduced in the population estimate across strata. This is easy to see by inspection of the population estimator as 
+$$E[\hat N] = \displaystyle\sum_{i}^{S} \frac{Y_i}{p};$$
+thus, the population estimate across all strata varies inversely with a common detection estimate and any error in the detection estimate is applied to all strata. Using Goodman's (1960) formula for the variance of a product and the Taylor approximation for the variance of a reciprocal, Fieberg and Giudice (2008) give the an estimate of the variance of population size summed over all strata as (eqs. A3 and A4)
+
+$$Var(\hat N) = \left( \sum_i M_i \bar y_i \right)^2 Var \left( \frac{1}{p} \right) + \left( \frac{1}{p} \right)^2 \left[ \sum_i M_i^2 Var(\bar y) \right] - Var \left( \frac{1}{p} \right) \left[ \sum_i M_i^2 Var(\bar y) \right]$$
+with 
+$$Var(\bar y) = \left( \frac{M-m}{M} \right) \frac{s^2}{m} +\left( \frac{1-p}{M} \right) \bar y$$
+as above.  
+
+# References
+Fieberg, J. and Giudice, J. 2008. Variance of stratified survey estimators with probability of detection adjustments. Journal of Wildlife Management, 72(3), pp.837-844.
+
+Goodman, L. A. 1960. On the exact variance of products. Journal of the American Statistical Association 55:708–713.  
+
+Thompson, S. K. 2012.  Sampling.  Wiley, Hoboken, New Jersey, 436 pp.  
+
+Williams, B. K., J. D. Nichols, and M. J. Conroy. 2002. Analysis and management of animal populations.  Academic Press, New York, 817 pp. 
+
+# Appendix:  simulation code used above
+```{r, eval=FALSE, code = readLines("variance_sim.R")}
+```
